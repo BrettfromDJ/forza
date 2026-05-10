@@ -63,6 +63,12 @@ export default async function SeasonDetail({
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
+            <Link
+              href={`/seasons/${season.id}/edit`}
+              className="text-sm px-4 py-2 rounded-full border border-line hover:border-ink-dim"
+            >
+              Edit
+            </Link>
             {season.status !== "active" && (
               <form action={activateSeasonAction}>
                 <input type="hidden" name="id" value={season.id} />

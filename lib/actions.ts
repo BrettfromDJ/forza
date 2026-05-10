@@ -86,6 +86,59 @@ export async function createSeasonAction(formData: FormData) {
   redirect(`/seasons/${info.lastInsertRowid}`);
 }
 
+export async function editSeasonAction(formData: FormData) {
+  const db = getDb();
+  const id = Number(formData.get("id"));
+  const name = String(formData.get("name") || "").trim();
+  const start = String(formData.get("start_date") || "") || null;
+  const end = String(formData.get("end_date") || "") || null;
+  const status = String(formData.get("status") || "active");
+  const points = [1, 2, 3, 4]
+    .map((i) => Number(formData.get(`p${i}`)))
+    .filter((n) => !Number.isNaN(n));
+  if (!id) throw new Error("Season id required");
+  if (!name) throw new Error("Season name required");
+  if (points.length !== 4) throw new Error("Need 4 point values");
+  if (!["active", "upcoming", "completed"].includes(status))
+    throw new Error("Invalid status");
+
+  const tx = db.transaction(() => {
+    if (status === "active") {
+      db.prepare(
+        "UPDATE seasons SET status = 'completed' WHERE status = 'active' AND id != ?",
+      ).run(id);
+    }
+    db.prepare(
+      `UPDATE seasons
+       SET name = ?, points_config = ?, start_date = ?, end_date = ?, status = ?
+       WHERE id = ?`,
+    ).run(name, JSON.stringify(points), start, end, status, id);
+  });
+  tx();
+
+  revalidatePath("/", "layout");
+  redirect(`/seasons/${id}`);
+}
+
+export async function editTeamAction(formData: FormData) {
+  const db = getDb();
+  const id = Number(formData.get("id"));
+  const name = String(formData.get("name") || "").trim();
+  const color = String(formData.get("color") || "").trim();
+  if (!id) throw new Error("Team id required");
+  if (!name) throw new Error("Team name required");
+  if (!/^#[0-9a-fA-F]{6}$/.test(color)) throw new Error("Invalid color");
+
+  db.prepare("UPDATE teams SET name = ?, color = ? WHERE id = ?").run(
+    name,
+    color,
+    id,
+  );
+
+  revalidatePath("/", "layout");
+  redirect(`/teams/${id}`);
+}
+
 export async function activateSeasonAction(formData: FormData) {
   const db = getDb();
   const id = Number(formData.get("id"));

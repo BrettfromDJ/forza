@@ -84,6 +84,12 @@ export default async function TeamDetail({
             background: `linear-gradient(135deg, ${team.color}33, transparent 70%), var(--color-surface)`,
           }}
         >
+          <Link
+            href={`/teams/${team.id}/edit`}
+            className="absolute top-5 right-5 text-sm px-4 py-2 rounded-full border border-line bg-black/30 hover:border-ink-dim"
+          >
+            Edit
+          </Link>
           <div className="text-xs uppercase tracking-[0.2em] text-ink-mute">
             Team
           </div>

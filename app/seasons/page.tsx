@@ -51,6 +51,12 @@ export default function SeasonsPage() {
                     {s.end_date ? ` → ${s.end_date}` : ""}
                   </div>
                 </Link>
+                <Link
+                  href={`/seasons/${s.id}/edit`}
+                  className="text-xs px-3 py-1.5 rounded-full border border-line hover:border-ink-dim text-ink-dim hover:text-ink"
+                >
+                  Edit
+                </Link>
                 {s.status !== "active" && (
                   <form action={activateSeasonAction}>
                     <input type="hidden" name="id" value={s.id} />
