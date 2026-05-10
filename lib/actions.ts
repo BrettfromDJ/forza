@@ -68,6 +68,10 @@ export async function createSeasonAction(formData: FormData) {
   if (!name) throw new Error("Season name required");
   if (points.length !== 4) throw new Error("Need 4 point values");
   const status = String(formData.get("status") || "active");
+  const regular = Math.max(
+    1,
+    Math.min(100, Number(formData.get("regular_season_races")) || 10),
+  );
 
   if (status === "active") {
     db.prepare(
@@ -77,10 +81,10 @@ export async function createSeasonAction(formData: FormData) {
 
   const info = db
     .prepare(
-      `INSERT INTO seasons (name, points_config, start_date, end_date, status)
-       VALUES (?, ?, ?, ?, ?)`,
+      `INSERT INTO seasons (name, points_config, start_date, end_date, status, regular_season_races)
+       VALUES (?, ?, ?, ?, ?, ?)`,
     )
-    .run(name, JSON.stringify(points), start, end, status);
+    .run(name, JSON.stringify(points), start, end, status, regular);
 
   revalidatePath("/", "layout");
   redirect(`/seasons/${info.lastInsertRowid}`);
@@ -102,6 +106,11 @@ export async function editSeasonAction(formData: FormData) {
   if (!["active", "upcoming", "completed"].includes(status))
     throw new Error("Invalid status");
 
+  const regular = Math.max(
+    1,
+    Math.min(100, Number(formData.get("regular_season_races")) || 10),
+  );
+
   const tx = db.transaction(() => {
     if (status === "active") {
       db.prepare(
@@ -110,9 +119,9 @@ export async function editSeasonAction(formData: FormData) {
     }
     db.prepare(
       `UPDATE seasons
-       SET name = ?, points_config = ?, start_date = ?, end_date = ?, status = ?
+       SET name = ?, points_config = ?, start_date = ?, end_date = ?, status = ?, regular_season_races = ?
        WHERE id = ?`,
-    ).run(name, JSON.stringify(points), start, end, status, id);
+    ).run(name, JSON.stringify(points), start, end, status, regular, id);
   });
   tx();
 

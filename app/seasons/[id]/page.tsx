@@ -57,12 +57,19 @@ export default async function SeasonDetail({
               {season.name}
             </h1>
             <div className="text-sm text-ink-dim mt-1">
-              Points {points.join("-")}
+              Round {Math.min(races.length, season.regular_season_races)} of{" "}
+              {season.regular_season_races} · Points {points.join("-")}
               {season.start_date ? ` · ${season.start_date}` : ""}
               {season.end_date ? ` → ${season.end_date}` : ""}
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
+            <Link
+              href={`/seasons/${season.id}/calendar`}
+              className="text-sm px-4 py-2 rounded-full border border-line hover:border-ink-dim"
+            >
+              Calendar
+            </Link>
             <Link
               href={`/seasons/${season.id}/edit`}
               className="text-sm px-4 py-2 rounded-full border border-line hover:border-ink-dim"

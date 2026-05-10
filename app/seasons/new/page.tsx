@@ -44,7 +44,7 @@ export default function NewSeasonPage() {
           </Field>
         </div>
 
-        <Field label="Points per finishing position" hint="Editable later? No — pick once.">
+        <Field label="Points per finishing position">
           <div className="grid grid-cols-4 gap-3">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="relative">
@@ -61,6 +61,20 @@ export default function NewSeasonPage() {
               </div>
             ))}
           </div>
+        </Field>
+
+        <Field
+          label="Regular-season races"
+          hint="How many rounds make up the season calendar."
+        >
+          <input
+            type="number"
+            name="regular_season_races"
+            defaultValue={10}
+            min={1}
+            max={100}
+            className="w-32 bg-surface-2 border border-line rounded-lg px-3 py-2.5 tabular-nums outline-none focus:border-accent"
+          />
         </Field>
 
         <Field label="Status">

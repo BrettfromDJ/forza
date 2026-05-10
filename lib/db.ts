@@ -74,6 +74,15 @@ function migrate(db: Database.Database) {
     CREATE INDEX IF NOT EXISTS idx_results_race ON race_results(race_id);
     CREATE INDEX IF NOT EXISTS idx_results_player ON race_results(player_id);
   `);
+
+  const cols = db
+    .prepare("PRAGMA table_info(seasons)")
+    .all() as { name: string }[];
+  if (!cols.some((c) => c.name === "regular_season_races")) {
+    db.exec(
+      "ALTER TABLE seasons ADD COLUMN regular_season_races INTEGER NOT NULL DEFAULT 10",
+    );
+  }
 }
 
 export function getDb(): Database.Database {

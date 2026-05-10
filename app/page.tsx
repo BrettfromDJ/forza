@@ -53,10 +53,16 @@ export default function HomePage() {
               {season.name}
             </h1>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3 text-sm">
+            <Link
+              href={`/seasons/${season.id}/calendar`}
+              className="text-ink-dim hover:text-ink"
+            >
+              Calendar →
+            </Link>
             <Link
               href={`/seasons/${season.id}`}
-              className="text-sm text-ink-dim hover:text-ink"
+              className="text-ink-dim hover:text-ink"
             >
               Season detail →
             </Link>

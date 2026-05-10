@@ -28,6 +28,7 @@ export type Season = {
   start_date: string | null;
   end_date: string | null;
   status: SeasonStatus;
+  regular_season_races: number;
   created_at: string;
 };
 

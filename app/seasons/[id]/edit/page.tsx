@@ -79,6 +79,20 @@ export default async function EditSeasonPage({
           </div>
         </Field>
 
+        <Field
+          label="Regular-season races"
+          hint="How many rounds make up the season calendar."
+        >
+          <input
+            type="number"
+            name="regular_season_races"
+            defaultValue={season.regular_season_races}
+            min={1}
+            max={100}
+            className="w-32 bg-surface-2 border border-line rounded-lg px-3 py-2.5 tabular-nums outline-none focus:border-accent"
+          />
+        </Field>
+
         <Field label="Status">
           <select
             name="status"
