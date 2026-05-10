@@ -59,8 +59,6 @@ export default async function SeasonDetail({
             <div className="text-sm text-ink-dim mt-1">
               Round {Math.min(races.length, season.regular_season_races)} of{" "}
               {season.regular_season_races} · Points {points.join("-")}
-              {season.start_date ? ` · ${season.start_date}` : ""}
-              {season.end_date ? ` → ${season.end_date}` : ""}
             </div>
           </div>
           <div className="flex flex-wrap gap-2">

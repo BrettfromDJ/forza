@@ -47,8 +47,6 @@ export default function SeasonsPage() {
                   <div className="text-xs text-ink-mute mt-1">
                     {raceCount} race{raceCount === 1 ? "" : "s"} · points{" "}
                     {points.join("-")}
-                    {s.start_date ? ` · ${s.start_date}` : ""}
-                    {s.end_date ? ` → ${s.end_date}` : ""}
                   </div>
                 </Link>
                 <Link

@@ -60,8 +60,6 @@ export async function setupAction(formData: FormData) {
 export async function createSeasonAction(formData: FormData) {
   const db = getDb();
   const name = String(formData.get("name") || "").trim();
-  const start = String(formData.get("start_date") || "") || null;
-  const end = String(formData.get("end_date") || "") || null;
   const points = [1, 2, 3, 4]
     .map((i) => Number(formData.get(`p${i}`)))
     .filter((n) => !Number.isNaN(n));
@@ -81,10 +79,10 @@ export async function createSeasonAction(formData: FormData) {
 
   const info = db
     .prepare(
-      `INSERT INTO seasons (name, points_config, start_date, end_date, status, regular_season_races)
-       VALUES (?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO seasons (name, points_config, status, regular_season_races)
+       VALUES (?, ?, ?, ?)`,
     )
-    .run(name, JSON.stringify(points), start, end, status, regular);
+    .run(name, JSON.stringify(points), status, regular);
 
   revalidatePath("/", "layout");
   redirect(`/seasons/${info.lastInsertRowid}`);
@@ -94,8 +92,6 @@ export async function editSeasonAction(formData: FormData) {
   const db = getDb();
   const id = Number(formData.get("id"));
   const name = String(formData.get("name") || "").trim();
-  const start = String(formData.get("start_date") || "") || null;
-  const end = String(formData.get("end_date") || "") || null;
   const status = String(formData.get("status") || "active");
   const points = [1, 2, 3, 4]
     .map((i) => Number(formData.get(`p${i}`)))
@@ -119,9 +115,9 @@ export async function editSeasonAction(formData: FormData) {
     }
     db.prepare(
       `UPDATE seasons
-       SET name = ?, points_config = ?, start_date = ?, end_date = ?, status = ?, regular_season_races = ?
+       SET name = ?, points_config = ?, status = ?, regular_season_races = ?
        WHERE id = ?`,
-    ).run(name, JSON.stringify(points), start, end, status, regular, id);
+    ).run(name, JSON.stringify(points), status, regular, id);
   });
   tx();
 

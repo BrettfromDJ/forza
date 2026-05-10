@@ -38,25 +38,6 @@ export default async function EditSeasonPage({
           />
         </Field>
 
-        <div className="grid sm:grid-cols-2 gap-4">
-          <Field label="Start date">
-            <input
-              type="date"
-              name="start_date"
-              defaultValue={season.start_date ?? ""}
-              className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2.5"
-            />
-          </Field>
-          <Field label="End date">
-            <input
-              type="date"
-              name="end_date"
-              defaultValue={season.end_date ?? ""}
-              className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2.5"
-            />
-          </Field>
-        </div>
-
         <Field
           label="Points per finishing position"
           hint="Editing this re-scores every race in this season."

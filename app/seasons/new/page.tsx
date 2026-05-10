@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 
 export default function NewSeasonPage() {
   if (!isSetupComplete()) redirect("/setup");
-  const today = new Date().toISOString().slice(0, 10);
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -25,24 +24,6 @@ export default function NewSeasonPage() {
             className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2.5 outline-none focus:border-accent"
           />
         </Field>
-
-        <div className="grid sm:grid-cols-2 gap-4">
-          <Field label="Start date">
-            <input
-              type="date"
-              name="start_date"
-              defaultValue={today}
-              className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2.5"
-            />
-          </Field>
-          <Field label="End date (optional)">
-            <input
-              type="date"
-              name="end_date"
-              className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2.5"
-            />
-          </Field>
-        </div>
 
         <Field label="Points per finishing position">
           <div className="grid grid-cols-4 gap-3">

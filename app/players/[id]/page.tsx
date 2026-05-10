@@ -13,6 +13,8 @@ import {
   parsePoints,
   pointsForPosition,
 } from "@/lib/scoring";
+import { computeAchievements } from "@/lib/achievements";
+import { computeDriverH2H } from "@/lib/h2h";
 
 export default async function PlayerDetail({
   params,
@@ -41,8 +43,10 @@ export default async function PlayerDetail({
   let lifetimePoints = 0;
   let positionSum = 0;
   let counted = 0;
+  const racesBySeason: Record<number, ReturnType<typeof listRacesWithResults>> = {};
   for (const s of seasons) {
     const races = listRacesWithResults(s.id);
+    racesBySeason[s.id] = races;
     const points = parsePoints(s.points_config);
     for (const r of races) {
       const res = r.results.find((x) => x.player_id === player.id);
@@ -57,6 +61,16 @@ export default async function PlayerDetail({
       }
     }
   }
+
+  const allRacesFlat = Object.values(racesBySeason).flat();
+  const opponents = allPlayers.filter((p) => p.id !== player.id);
+  const h2h = computeDriverH2H(
+    player.id,
+    opponents.map((o) => o.id),
+    allRacesFlat,
+  );
+  const achievements = computeAchievements(player.id, seasons, racesBySeason);
+  const earnedCount = achievements.filter((a) => a.earned).length;
 
   return (
     <div className="space-y-8">
@@ -137,6 +151,138 @@ export default async function PlayerDetail({
             label="Avg"
             value={counted ? `P${(positionSum / counted).toFixed(1)}` : "—"}
           />
+        </div>
+      </section>
+
+      {opponents.length > 0 && (
+        <section>
+          <h2 className="text-sm uppercase tracking-[0.2em] text-ink-mute font-bold mb-3">
+            Head to head (all-time)
+          </h2>
+          <div className="grid sm:grid-cols-3 gap-3">
+            {h2h.map((row) => {
+              const opp = opponents.find((o) => o.id === row.opponentId)!;
+              const total = row.shared;
+              const aheadPct = total ? (row.ahead / total) * 100 : 0;
+              const behindPct = total ? (row.behind / total) * 100 : 0;
+              return (
+                <Link
+                  key={opp.id}
+                  href={`/players/${opp.id}`}
+                  className="bg-surface rounded-2xl border border-line/60 hover:border-line p-4 block"
+                >
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span
+                        className="w-2 h-8 rounded-sm"
+                        style={{ background: opp.color }}
+                      />
+                      <div className="font-bold truncate">vs {opp.name}</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xl font-black tabular-nums leading-none">
+                        {row.ahead}
+                        <span className="text-ink-mute text-sm">
+                          -{row.behind}
+                        </span>
+                      </div>
+                      <div className="text-[10px] text-ink-mute uppercase">
+                        ahead-behind
+                      </div>
+                    </div>
+                  </div>
+                  <div className="h-2 rounded-full overflow-hidden flex bg-surface-2">
+                    <div
+                      className="h-full"
+                      style={{
+                        width: `${aheadPct}%`,
+                        background: player.color,
+                      }}
+                    />
+                    <div
+                      className="h-full"
+                      style={{
+                        width: `${behindPct}%`,
+                        background: opp.color,
+                        opacity: 0.7,
+                      }}
+                    />
+                  </div>
+                  <div className="text-xs text-ink-mute mt-2">
+                    {total === 0
+                      ? "No shared races yet."
+                      : `${total} shared race${total === 1 ? "" : "s"}`}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      <section>
+        <div className="flex items-end justify-between mb-3">
+          <h2 className="text-sm uppercase tracking-[0.2em] text-ink-mute font-bold">
+            Achievements
+          </h2>
+          <div className="text-xs text-ink-mute tabular-nums">
+            {earnedCount}/{achievements.length}
+          </div>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-3">
+          {achievements.map((a) => (
+            <div
+              key={a.id}
+              className={`flex gap-4 p-4 rounded-2xl border transition ${
+                a.earned
+                  ? "bg-surface border-line"
+                  : "bg-surface/40 border-line/40 opacity-60"
+              }`}
+            >
+              <div
+                className={`text-3xl shrink-0 w-12 h-12 rounded-full flex items-center justify-center ${
+                  a.earned
+                    ? "bg-accent/20 ring-2 ring-accent/40"
+                    : "bg-black/30 grayscale"
+                }`}
+              >
+                {a.icon}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="font-bold flex items-center gap-2">
+                  {a.name}
+                  {a.earned && (
+                    <span className="text-[10px] uppercase tracking-wider font-bold text-accent">
+                      Earned
+                    </span>
+                  )}
+                </div>
+                <div className="text-xs text-ink-dim mt-0.5">
+                  {a.description}
+                </div>
+                {a.earned && a.detail && (
+                  <div className="text-[11px] text-ink-mute mt-1">
+                    {a.detail}
+                  </div>
+                )}
+                {!a.earned && a.progress && (
+                  <div className="mt-2">
+                    <div className="h-1.5 bg-line rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-ink-mute"
+                        style={{
+                          width: `${Math.min(100, (a.progress.current / a.progress.target) * 100)}%`,
+                        }}
+                      />
+                    </div>
+                    <div className="text-[11px] text-ink-mute mt-1 tabular-nums">
+                      {a.progress.current} / {a.progress.target}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </section>
     </div>
