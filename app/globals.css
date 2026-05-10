@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #0a0a0d;
+  --color-surface: #14141a;
+  --color-surface-2: #1d1d27;
+  --color-line: #2a2a36;
+  --color-ink: #f5f5f7;
+  --color-ink-dim: #a0a0b0;
+  --color-ink-mute: #6b6b7a;
+  --color-accent: #e10600;
+  --color-accent-2: #ffd400;
+  --color-good: #2ecc71;
+  --color-bad: #ff4757;
+  --font-display: "Bebas Neue", "Anton", system-ui, sans-serif;
+}
+
+html, body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.race-grid {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.diagonal-stripes {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(255,255,255,0.06) 0 12px,
+    transparent 12px 24px
+  );
+}
+
+.glow-accent {
+  box-shadow: 0 0 0 1px rgba(225,6,0,0.3), 0 8px 40px -12px rgba(225,6,0,0.5);
+}
+
+.checker {
+  background-image:
+    linear-gradient(45deg, #fff 25%, transparent 25%),
+    linear-gradient(-45deg, #fff 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #fff 75%),
+    linear-gradient(-45deg, transparent 75%, #fff 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  background-color: #000;
+}
+
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.slide-in { animation: slide-in 0.25s ease-out both; }

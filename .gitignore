@@ -1,0 +1,13 @@
+node_modules
+.next
+out
+data/forza.db
+data/forza.db-journal
+data/forza.db-wal
+data/forza.db-shm
+data/uploads/*
+!data/uploads/.gitkeep
+.env*
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
