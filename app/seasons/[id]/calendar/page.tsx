@@ -72,8 +72,10 @@ export default async function SeasonCalendar({
             );
           const outcomes = teamOutcomesForRace(race, teams, points);
           const sorted = [...outcomes].sort((a, b) => b.points - a.points);
+          const isTie =
+            sorted.length > 1 && sorted[0].points === sorted[1].points;
           const winnerTeam =
-            sorted.length > 1 && sorted[0].points > sorted[1].points
+            !isTie && sorted.length > 1
               ? teams.find((t) => t.id === sorted[0].teamId)
               : null;
           const podium = race.results.slice().sort((a, b) => a.position - b.position);
@@ -105,6 +107,18 @@ export default async function SeasonCalendar({
                   style={{ background: winnerTeam.color, color: "#000" }}
                 >
                   {winnerTeam.name}
+                </div>
+              )}
+              {isTie && (
+                <div className="absolute top-3 right-3 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full bg-black/70 backdrop-blur ring-1 ring-ink-mute/40">
+                  {teams.map((t) => (
+                    <span
+                      key={t.id}
+                      className="w-2 h-2 rounded-full"
+                      style={{ background: t.color }}
+                    />
+                  ))}
+                  Tie
                 </div>
               )}
               <div className="p-4">
