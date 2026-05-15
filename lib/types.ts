@@ -2,6 +2,7 @@ export type Player = {
   id: number;
   name: string;
   color: string;
+  password_hash: string | null;
   created_at: string;
 };
 

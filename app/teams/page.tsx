@@ -10,9 +10,11 @@ import {
   computeTeamSeasonStats,
   parsePoints,
 } from "@/lib/scoring";
+import { requireAuth } from "@/lib/auth";
 
-export default function TeamsPage() {
+export default async function TeamsPage() {
   if (!isSetupComplete()) redirect("/setup");
+  await requireAuth();
   const teams = listTeams();
   const active = getActiveSeason();
   const points = active ? parsePoints(active.points_config) : [4, 3, 2, 1];

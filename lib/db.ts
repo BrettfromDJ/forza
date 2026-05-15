@@ -83,6 +83,13 @@ function migrate(db: Database.Database) {
       "ALTER TABLE seasons ADD COLUMN regular_season_races INTEGER NOT NULL DEFAULT 10",
     );
   }
+
+  const playerCols = db
+    .prepare("PRAGMA table_info(players)")
+    .all() as { name: string }[];
+  if (!playerCols.some((c) => c.name === "password_hash")) {
+    db.exec("ALTER TABLE players ADD COLUMN password_hash TEXT");
+  }
 }
 
 export function getDb(): Database.Database {

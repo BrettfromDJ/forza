@@ -3,12 +3,14 @@ import { notFound } from "next/navigation";
 import { editSeasonAction } from "@/lib/actions";
 import { getSeason } from "@/lib/queries";
 import { parsePoints } from "@/lib/scoring";
+import { requireAuth } from "@/lib/auth";
 
 export default async function EditSeasonPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requireAuth();
   const { id } = await params;
   const season = getSeason(Number(id));
   if (!season) notFound();

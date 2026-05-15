@@ -6,12 +6,14 @@ import {
   listTeams,
 } from "@/lib/queries";
 import { parsePoints, teamOutcomesForRace } from "@/lib/scoring";
+import { requireAuth } from "@/lib/auth";
 
 export default async function SeasonCalendar({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requireAuth();
   const { id } = await params;
   const season = getSeason(Number(id));
   if (!season) notFound();

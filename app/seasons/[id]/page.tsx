@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { requireAuth } from "@/lib/auth";
 import {
   getSeason,
   listRacesWithResults,
@@ -24,6 +25,7 @@ export default async function SeasonDetail({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requireAuth();
   const { id } = await params;
   const season = getSeason(Number(id));
   if (!season) notFound();

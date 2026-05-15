@@ -6,12 +6,49 @@ import path from "node:path";
 import fs from "node:fs/promises";
 import crypto from "node:crypto";
 import { getDb, UPLOAD_DIR } from "./db";
+import {
+  clearSessionCookie,
+  hashPassword,
+  setSessionCookie,
+  verifyPassword,
+} from "./auth";
+import type { Player } from "./types";
+
+export async function loginAction(formData: FormData) {
+  const playerId = Number(formData.get("player_id"));
+  const password = String(formData.get("password") || "");
+  if (!playerId) throw new Error("Pick a driver");
+  const player = getDb()
+    .prepare("SELECT * FROM players WHERE id = ?")
+    .get(playerId) as Player | undefined;
+  if (!player) throw new Error("Driver not found");
+
+  if (player.password_hash) {
+    if (!password) throw new Error("Password required");
+    const ok = await verifyPassword(password, player.password_hash);
+    if (!ok) throw new Error("Wrong password");
+  }
+
+  await setSessionCookie(player.id);
+  revalidatePath("/", "layout");
+  redirect("/");
+}
+
+export async function logoutAction() {
+  await clearSessionCookie();
+  revalidatePath("/", "layout");
+  redirect("/login");
+}
 
 export async function setupAction(formData: FormData) {
   const db = getDb();
+  const wasEmpty =
+    (db.prepare("SELECT COUNT(*) as c FROM players").get() as { c: number }).c ===
+    0;
   const players = [1, 2, 3, 4].map((i) => ({
     name: String(formData.get(`p${i}_name`) || "").trim(),
     color: String(formData.get(`p${i}_color`) || "#e10600"),
+    password: String(formData.get(`p${i}_password`) || ""),
   }));
   const teams = [1, 2].map((i) => ({
     name: String(formData.get(`t${i}_name`) || `Team ${i}`).trim(),
@@ -29,12 +66,23 @@ export async function setupAction(formData: FormData) {
   if (new Set(allPicked).size !== 4)
     throw new Error("Each player must be on exactly one team");
 
+  const hashedPasswords = await Promise.all(
+    players.map(async (p) => (p.password ? await hashPassword(p.password) : null)),
+  );
+
   const tx = db.transaction(() => {
     const upsertPlayer = db.prepare(
       `INSERT INTO players (id, name, color) VALUES (?, ?, ?)
        ON CONFLICT(id) DO UPDATE SET name = excluded.name, color = excluded.color`,
     );
     players.forEach((p, idx) => upsertPlayer.run(idx + 1, p.name, p.color));
+
+    const setPw = db.prepare(
+      "UPDATE players SET password_hash = ? WHERE id = ?",
+    );
+    hashedPasswords.forEach((hash, idx) => {
+      if (hash) setPw.run(hash, idx + 1);
+    });
 
     const existingTeams = db
       .prepare("SELECT id FROM teams ORDER BY id ASC")
@@ -52,6 +100,9 @@ export async function setupAction(formData: FormData) {
     });
   });
   tx();
+
+  // First-time setup auto-logs in P1 so the admin isn't kicked to a login wall
+  if (wasEmpty) await setSessionCookie(1);
 
   revalidatePath("/", "layout");
   redirect("/");

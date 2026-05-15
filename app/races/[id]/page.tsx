@@ -7,12 +7,14 @@ import {
 } from "@/lib/queries";
 import { parsePoints, teamOutcomesForRace } from "@/lib/scoring";
 import { deleteRaceAction } from "@/lib/actions";
+import { requireAuth } from "@/lib/auth";
 
 export default async function RaceDetail({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requireAuth();
   const { id } = await params;
   const race = getRaceWithResults(Number(id));
   if (!race) notFound();

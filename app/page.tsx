@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { requireAuth } from "@/lib/auth";
 import {
   getActiveSeason,
   isSetupComplete,
@@ -15,8 +16,9 @@ import {
 import { StandingsScoreboard } from "@/components/Standings";
 import { RaceCard } from "@/components/RaceCard";
 
-export default function HomePage() {
+export default async function HomePage() {
   if (!isSetupComplete()) redirect("/setup");
+  await requireAuth();
 
   const season = getActiveSeason();
   const teams = listTeams();

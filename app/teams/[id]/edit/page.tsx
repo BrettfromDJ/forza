@@ -2,12 +2,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { editTeamAction } from "@/lib/actions";
 import { getTeam } from "@/lib/queries";
+import { requireAuth } from "@/lib/auth";
 
 export default async function EditTeamPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requireAuth();
   const { id } = await params;
   const team = getTeam(Number(id));
   if (!team) notFound();

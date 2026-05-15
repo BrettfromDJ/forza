@@ -12,12 +12,14 @@ import {
   parsePoints,
   teamOutcomesForRace,
 } from "@/lib/scoring";
+import { requireAuth } from "@/lib/auth";
 
 export default async function TeamDetail({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requireAuth();
   const { id } = await params;
   const team = getTeam(Number(id));
   if (!team) notFound();

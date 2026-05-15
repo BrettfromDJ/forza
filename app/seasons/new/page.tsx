@@ -2,9 +2,11 @@ import Link from "next/link";
 import { createSeasonAction } from "@/lib/actions";
 import { isSetupComplete } from "@/lib/queries";
 import { redirect } from "next/navigation";
+import { requireAuth } from "@/lib/auth";
 
-export default function NewSeasonPage() {
+export default async function NewSeasonPage() {
   if (!isSetupComplete()) redirect("/setup");
+  await requireAuth();
 
   return (
     <div className="max-w-2xl mx-auto">

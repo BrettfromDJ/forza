@@ -3,9 +3,11 @@ import { listSeasons, listRaces, isSetupComplete } from "@/lib/queries";
 import { redirect } from "next/navigation";
 import { activateSeasonAction } from "@/lib/actions";
 import { parsePoints } from "@/lib/scoring";
+import { requireAuth } from "@/lib/auth";
 
-export default function SeasonsPage() {
+export default async function SeasonsPage() {
   if (!isSetupComplete()) redirect("/setup");
+  await requireAuth();
   const seasons = listSeasons();
 
   return (

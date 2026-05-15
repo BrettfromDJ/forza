@@ -9,9 +9,11 @@ import {
 } from "@/lib/queries";
 import { logRaceAction } from "@/lib/actions";
 import { RacePicker } from "@/components/RacePicker";
+import { requireAuth } from "@/lib/auth";
 
-export default function NewRacePage() {
+export default async function NewRacePage() {
   if (!isSetupComplete()) redirect("/setup");
+  await requireAuth();
   const seasons = listSeasons();
   if (seasons.length === 0) redirect("/seasons/new");
 

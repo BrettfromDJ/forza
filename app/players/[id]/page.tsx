@@ -15,12 +15,14 @@ import {
 } from "@/lib/scoring";
 import { computeAchievements } from "@/lib/achievements";
 import { computeDriverH2H } from "@/lib/h2h";
+import { requireAuth } from "@/lib/auth";
 
 export default async function PlayerDetail({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requireAuth();
   const { id } = await params;
   const player = getPlayer(Number(id));
   if (!player) notFound();
