@@ -136,7 +136,16 @@ export default async function HomePage() {
           <div>
             <SectionHeader title="Drivers" />
           <div className="space-y-2">
-            {players.map((p) => {
+            {[...players]
+              .sort((a, b) => {
+                const sa = playerStats.find((x) => x.playerId === a.id)!;
+                const sb = playerStats.find((x) => x.playerId === b.id)!;
+                if (sb.totalPoints !== sa.totalPoints) return sb.totalPoints - sa.totalPoints;
+                const ap = sa.avgPosition ?? 99;
+                const bp = sb.avgPosition ?? 99;
+                return ap - bp;
+              })
+              .map((p) => {
               const s = playerStats.find((x) => x.playerId === p.id)!;
               return (
                 <Link
@@ -169,6 +178,7 @@ export default async function HomePage() {
               );
             })}
           </div>
+
           </div>
         </div>
       </section>
