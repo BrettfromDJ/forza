@@ -18,6 +18,7 @@ import { StandingsScoreboard } from "@/components/Standings";
 import { RaceCard } from "@/components/RaceCard";
 import { ActivityFeed } from "@/components/ActivityFeed";
 import { buildActivityFeed } from "@/lib/feed";
+import { AutoRefresh } from "@/components/AutoRefresh";
 
 export default async function HomePage() {
   if (!isSetupComplete()) redirect("/setup");
@@ -60,6 +61,7 @@ export default async function HomePage() {
 
   return (
     <div className="space-y-10">
+      <AutoRefresh />
       <section>
         <div className="flex flex-wrap items-end justify-between gap-3 mb-4">
           <div>
