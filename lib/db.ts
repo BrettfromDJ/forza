@@ -93,6 +93,35 @@ function migrate(db: Database.Database) {
   if (!playerCols.some((c) => c.name === "gamertag")) {
     db.exec("ALTER TABLE players ADD COLUMN gamertag TEXT");
   }
+
+  const raceCols = db
+    .prepare("PRAGMA table_info(races)")
+    .all() as { name: string }[];
+  if (!raceCols.some((c) => c.name === "laps")) {
+    db.exec("ALTER TABLE races ADD COLUMN laps INTEGER");
+  }
+  if (!raceCols.some((c) => c.name === "weather")) {
+    db.exec("ALTER TABLE races ADD COLUMN weather TEXT");
+  }
+  if (!raceCols.some((c) => c.name === "track_temp")) {
+    db.exec("ALTER TABLE races ADD COLUMN track_temp TEXT");
+  }
+
+  const resultCols = db
+    .prepare("PRAGMA table_info(race_results)")
+    .all() as { name: string }[];
+  if (!resultCols.some((c) => c.name === "car")) {
+    db.exec("ALTER TABLE race_results ADD COLUMN car TEXT");
+  }
+  if (!resultCols.some((c) => c.name === "best_lap")) {
+    db.exec("ALTER TABLE race_results ADD COLUMN best_lap TEXT");
+  }
+  if (!resultCols.some((c) => c.name === "total_time")) {
+    db.exec("ALTER TABLE race_results ADD COLUMN total_time TEXT");
+  }
+  if (!resultCols.some((c) => c.name === "penalties")) {
+    db.exec("ALTER TABLE race_results ADD COLUMN penalties INTEGER");
+  }
 }
 
 export function getDb(): Database.Database {

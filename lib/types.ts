@@ -42,6 +42,9 @@ export type Race = {
   race_date: string;
   notes: string | null;
   screenshot: string | null;
+  laps: number | null;
+  weather: string | null;
+  track_temp: string | null;
   created_at: string;
 };
 
@@ -51,6 +54,10 @@ export type RaceResult = {
   player_id: number;
   position: number;
   dnf: number; // 0 or 1
+  car: string | null;
+  best_lap: string | null;
+  total_time: string | null;
+  penalties: number | null;
 };
 
 export type RaceWithResults = Race & {

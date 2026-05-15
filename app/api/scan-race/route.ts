@@ -30,30 +30,42 @@ export async function POST(req: NextRequest) {
     .map((p) => `"${p.gamertag}" = ${p.name}`)
     .join(", ");
 
-  const prompt = `This is a screenshot from Forza Motorsport or Forza Horizon showing race results.
+  const prompt = `This is a screenshot from Forza Motorsport or Forza Horizon showing post-race results.
 
-Extract the finishing order and return ONLY valid JSON — no explanation, no markdown, just the JSON object.
+Return ONLY valid JSON — no explanation, no markdown.
 
 Known gamertags: ${gamertagHints || "none set yet"}
 
 Return this exact shape:
 {
-  "track": "track name or null if not visible",
+  "track": "track name (e.g. 'Suzuka Circuit Full Circuit') or null",
+  "laps": number or null,
+  "weather": "short description like 'Sunny', 'Partly Cloudy', 'Rain' or null",
+  "track_temp": "temperature with unit like '64°F' or null",
   "results": [
-    { "gamertag": "exact gamertag from screen", "position": 1, "dnf": false },
-    { "gamertag": "exact gamertag from screen", "position": 2, "dnf": false }
+    {
+      "gamertag": "exact gamertag from screen",
+      "position": 1,
+      "dnf": false,
+      "car": "car name like 'McLaren #03 720S' or null",
+      "best_lap": "best lap time like '1:42.103' or null (use null if shown as '---')",
+      "total_time": "race time like '02:00.115' or null",
+      "penalties": 0
+    }
   ]
 }
 
 Rules:
-- positions are 1-based finishing order (1st, 2nd, 3rd, 4th)
-- set dnf: true if the driver did not finish / retired
+- positions are 1-based finishing order
+- set dnf: true if the driver did not finish / TOTAL column shows DNF
 - include ALL visible drivers
-- gamertag should be exactly as shown on screen`;
+- gamertag must be exactly as shown on screen
+- if best lap is "---" or blank, use null
+- penalties is the count of penalty incidents (0 if none)`;
 
   const message = await client.messages.create({
     model: "claude-sonnet-4-6",
-    max_tokens: 512,
+    max_tokens: 1024,
     messages: [
       {
         role: "user",
@@ -71,15 +83,33 @@ Rules:
   const text =
     message.content[0].type === "text" ? message.content[0].text : "";
 
-  let parsed: { track: string | null; results: { gamertag: string; position: number; dnf: boolean }[] };
+  type ScanResult = {
+    track: string | null;
+    laps: number | null;
+    weather: string | null;
+    track_temp: string | null;
+    results: {
+      gamertag: string;
+      position: number;
+      dnf: boolean;
+      car: string | null;
+      best_lap: string | null;
+      total_time: string | null;
+      penalties: number;
+    }[];
+  };
+
+  let parsed: ScanResult;
   try {
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     parsed = JSON.parse(jsonMatch?.[0] ?? text);
   } catch {
-    return NextResponse.json({ error: "Could not parse AI response", raw: text }, { status: 422 });
+    return NextResponse.json(
+      { error: "Could not parse AI response", raw: text },
+      { status: 422 },
+    );
   }
 
-  // Match gamertags to player IDs
   const matched = parsed.results.map((r) => {
     const lower = r.gamertag.toLowerCase();
     const player = players.find(
@@ -89,8 +119,18 @@ Rules:
           lower.includes(p.gamertag.toLowerCase()) ||
           p.gamertag.toLowerCase().includes(lower)),
     );
-    return { ...r, playerId: player?.id ?? null, playerName: player?.name ?? null };
+    return {
+      ...r,
+      playerId: player?.id ?? null,
+      playerName: player?.name ?? null,
+    };
   });
 
-  return NextResponse.json({ track: parsed.track, results: matched });
+  return NextResponse.json({
+    track: parsed.track,
+    laps: parsed.laps,
+    weather: parsed.weather,
+    track_temp: parsed.track_temp,
+    results: matched,
+  });
 }

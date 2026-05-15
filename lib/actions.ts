@@ -228,6 +228,10 @@ export async function logRaceAction(formData: FormData) {
   const raceDate =
     String(formData.get("race_date") || "") || new Date().toISOString().slice(0, 10);
   const notes = String(formData.get("notes") || "").trim() || null;
+  const lapsRaw = String(formData.get("laps") || "").trim();
+  const laps = lapsRaw ? Number(lapsRaw) : null;
+  const weather = String(formData.get("weather") || "").trim() || null;
+  const trackTemp = String(formData.get("track_temp") || "").trim() || null;
 
   if (!seasonId) throw new Error("Season required");
   if (!track) throw new Error("Track required");
@@ -240,6 +244,13 @@ export async function logRaceAction(formData: FormData) {
     player_id: p.id,
     position: Number(formData.get(`position_${p.id}`)),
     dnf: formData.get(`dnf_${p.id}`) === "on" ? 1 : 0,
+    car: String(formData.get(`car_${p.id}`) || "").trim() || null,
+    best_lap: String(formData.get(`best_lap_${p.id}`) || "").trim() || null,
+    total_time: String(formData.get(`total_time_${p.id}`) || "").trim() || null,
+    penalties: (() => {
+      const v = String(formData.get(`penalties_${p.id}`) || "").trim();
+      return v ? Number(v) : null;
+    })(),
   }));
 
   if (positions.some((p) => !p.position || p.position < 1 || p.position > 4))
@@ -267,17 +278,26 @@ export async function logRaceAction(formData: FormData) {
   const tx = db.transaction(() => {
     const info = db
       .prepare(
-        `INSERT INTO races (season_id, track, mode, race_date, notes, screenshot)
-         VALUES (?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO races (season_id, track, mode, race_date, notes, screenshot, laps, weather, track_temp)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       )
-      .run(seasonId, track, mode, raceDate, notes, screenshotName);
+      .run(seasonId, track, mode, raceDate, notes, screenshotName, laps, weather, trackTemp);
     const raceId = info.lastInsertRowid as number;
     const insertResult = db.prepare(
-      `INSERT INTO race_results (race_id, player_id, position, dnf)
-       VALUES (?, ?, ?, ?)`,
+      `INSERT INTO race_results (race_id, player_id, position, dnf, car, best_lap, total_time, penalties)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     );
     for (const p of positions)
-      insertResult.run(raceId, p.player_id, p.position, p.dnf);
+      insertResult.run(
+        raceId,
+        p.player_id,
+        p.position,
+        p.dnf,
+        p.car,
+        p.best_lap,
+        p.total_time,
+        p.penalties,
+      );
     return raceId;
   });
   const raceId = tx();

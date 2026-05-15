@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { RaceWithResults, TeamWithPlayers } from "@/lib/types";
 import { teamOutcomesForRace } from "@/lib/scoring";
+import { weatherEmoji, fastestLap } from "@/lib/raceInfo";
 
 export function RaceCard({
   race,
@@ -17,6 +18,7 @@ export function RaceCard({
     sorted.length > 1 && sorted[0].points > sorted[1].points
       ? sorted[0].teamId
       : null;
+  const fl = fastestLap(race);
 
   return (
     <Link
@@ -39,12 +41,29 @@ export function RaceCard({
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <div className="font-bold truncate">{race.track}</div>
-              <div className="text-xs text-ink-mute mt-0.5">
-                {race.race_date}
-                {race.mode ? ` · ${race.mode}` : ""}
+              <div className="text-xs text-ink-mute mt-0.5 flex items-center gap-1.5 flex-wrap">
+                <span>{race.race_date}</span>
+                {race.mode && <span>· {race.mode}</span>}
+                {race.laps && <span>· {race.laps} laps</span>}
+                {race.weather && (
+                  <span title={race.weather}>· {weatherEmoji(race.weather)} {race.weather}</span>
+                )}
               </div>
             </div>
           </div>
+          {fl && (
+            <div className="mt-2 text-xs flex items-center gap-1.5">
+              <span>⏱️</span>
+              <span className="text-ink-mute">Fastest lap</span>
+              <span
+                className="font-bold"
+                style={{ color: fl.player.color }}
+              >
+                {fl.player.name}
+              </span>
+              <span className="font-mono tabular-nums">{fl.time}</span>
+            </div>
+          )}
           <div className="mt-3 flex flex-wrap gap-2">
             {teams.map((team) => {
               const o = outcomes.find((x) => x.teamId === team.id)!;
@@ -53,9 +72,7 @@ export function RaceCard({
                 <div
                   key={team.id}
                   className={`flex items-center gap-2 px-2.5 py-1 rounded-full text-xs ${
-                    isWinner
-                      ? "bg-white/10 ring-1"
-                      : "bg-black/30"
+                    isWinner ? "bg-white/10 ring-1" : "bg-black/30"
                   }`}
                   style={
                     isWinner ? { boxShadow: `inset 0 0 0 1px ${team.color}` } : {}
