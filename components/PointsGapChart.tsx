@@ -40,7 +40,7 @@ export function PointsGapChart({ stats }: { stats: TeamSeasonStats[] }) {
 
   return (
     <div>
-      <div className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-ink-mute font-bold mb-2">
+      <div className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-ink-mute font-bold mb-2 text-center">
         Points race
       </div>
 
