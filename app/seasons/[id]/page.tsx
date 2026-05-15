@@ -16,6 +16,9 @@ import {
 import { StandingsScoreboard } from "@/components/Standings";
 import { RaceCard } from "@/components/RaceCard";
 import { PointsGapChart } from "@/components/PointsGapChart";
+import { ActivityFeed } from "@/components/ActivityFeed";
+import { AutoRefresh } from "@/components/AutoRefresh";
+import { buildActivityFeed } from "@/lib/feed";
 import {
   activateSeasonAction,
   completeSeasonAction,
@@ -44,9 +47,16 @@ export default async function SeasonDetail({
     players.map((p) => p.id),
   );
   const mvp = computeSeasonMVP(playerStats, players);
+  const feed = buildActivityFeed({
+    players,
+    teams,
+    seasons: [season],
+    racesBySeason: { [season.id]: races },
+  });
 
   return (
     <div className="space-y-10">
+      <AutoRefresh />
       <div>
         <Link href="/seasons" className="text-sm text-ink-dim hover:text-ink">
           ← Seasons
@@ -222,6 +232,11 @@ export default async function SeasonDetail({
                   </Link>
                 );
               })}
+          </div>
+
+          <div className="mt-6">
+            <SectionHeader title="Activity" />
+            <ActivityFeed items={feed} limit={10} />
           </div>
         </div>
       </section>

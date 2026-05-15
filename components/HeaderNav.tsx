@@ -21,7 +21,7 @@ export function HeaderNav({ me, activeSeasonId }: Props) {
     <>
       {/* Desktop */}
       <nav className="hidden md:flex items-center gap-1 text-sm">
-        <DesktopLink href="/">Home</DesktopLink>
+        <DesktopLink href={activeSeasonId ? `/seasons/${activeSeasonId}` : "/"}>Home</DesktopLink>
         <DesktopLink href="/seasons">Seasons</DesktopLink>
         <DesktopLink href="/teams">Teams</DesktopLink>
         <Link
@@ -97,7 +97,7 @@ export function HeaderNav({ me, activeSeasonId }: Props) {
             </div>
 
             <nav className="flex flex-col p-2 gap-1">
-              <SheetLink href="/" onClick={close}>
+              <SheetLink href={activeSeasonId ? `/seasons/${activeSeasonId}` : "/"} onClick={close}>
                 Home
               </SheetLink>
               <SheetLink href="/seasons" onClick={close}>
