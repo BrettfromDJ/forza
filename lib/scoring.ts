@@ -1,4 +1,4 @@
-import type { RaceWithResults, TeamWithPlayers } from "./types";
+import type { Player, RaceWithResults, TeamWithPlayers } from "./types";
 
 export function parsePoints(config: string): number[] {
   try {
@@ -173,4 +173,44 @@ export function computePlayerSeasonStats(
     stats.avgPosition = counted ? positionSum / counted : 0;
     return stats;
   });
+}
+
+export type SeasonMVP = {
+  player: Player;
+  wins: number;
+  podiums: number;
+  totalPoints: number;
+  avgPosition: number;
+  score: number;
+};
+
+export function computeSeasonMVP(
+  playerStats: PlayerSeasonStats[],
+  players: Player[],
+): SeasonMVP | null {
+  const candidates = playerStats
+    .filter((s) => s.races > 0)
+    .map((s) => ({
+      ...s,
+      // Weighted: wins matter most, then podiums, then raw points
+      score: s.wins * 10 + s.podiums * 3 + s.totalPoints,
+    }))
+    .sort(
+      (a, b) =>
+        b.score - a.score ||
+        (a.avgPosition || 99) - (b.avgPosition || 99),
+    );
+
+  if (candidates.length === 0) return null;
+  const top = candidates[0];
+  const player = players.find((p) => p.id === top.playerId);
+  if (!player) return null;
+  return {
+    player,
+    wins: top.wins,
+    podiums: top.podiums,
+    totalPoints: top.totalPoints,
+    avgPosition: top.avgPosition,
+    score: top.score,
+  };
 }

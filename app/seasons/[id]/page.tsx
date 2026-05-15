@@ -10,10 +10,12 @@ import {
 import {
   computePlayerSeasonStats,
   computeTeamSeasonStats,
+  computeSeasonMVP,
   parsePoints,
 } from "@/lib/scoring";
 import { StandingsScoreboard } from "@/components/Standings";
 import { RaceCard } from "@/components/RaceCard";
+import { PointsGapChart } from "@/components/PointsGapChart";
 import {
   activateSeasonAction,
   completeSeasonAction,
@@ -41,6 +43,7 @@ export default async function SeasonDetail({
     points,
     players.map((p) => p.id),
   );
+  const mvp = computeSeasonMVP(playerStats, players);
 
   return (
     <div className="space-y-10">
@@ -118,6 +121,8 @@ export default async function SeasonDetail({
 
       <StandingsScoreboard stats={teamStats} />
 
+      {races.length > 0 && <PointsGapChart stats={teamStats} />}
+
       <section className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <SectionHeader title={`Races (${races.length})`} />
@@ -140,6 +145,47 @@ export default async function SeasonDetail({
         </div>
 
         <div>
+          {mvp && (
+            <div className="mb-5">
+              <SectionHeader
+                title={season.status === "completed" ? "Season MVP" : "MVP so far"}
+              />
+              <div
+                className="rounded-2xl border p-4 flex items-center gap-4"
+                style={{
+                  borderColor: mvp.player.color + "55",
+                  background: mvp.player.color + "11",
+                }}
+              >
+                <div
+                  className="shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-2xl"
+                  style={{ background: mvp.player.color + "30" }}
+                >
+                  🏆
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div
+                    className="font-black text-lg leading-tight"
+                    style={{ color: mvp.player.color }}
+                  >
+                    {mvp.player.name}
+                  </div>
+                  <div className="text-xs text-ink-mute mt-0.5">
+                    {mvp.wins} win{mvp.wins !== 1 ? "s" : ""} ·{" "}
+                    {mvp.podiums} podium{mvp.podiums !== 1 ? "s" : ""} ·{" "}
+                    avg P{mvp.avgPosition ? mvp.avgPosition.toFixed(1) : "—"}
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  <div className="font-black text-2xl tabular-nums">
+                    {mvp.totalPoints}
+                  </div>
+                  <div className="text-[10px] text-ink-mute uppercase">pts</div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <SectionHeader title="Driver standings" />
           <div className="space-y-2">
             {[...playerStats]
