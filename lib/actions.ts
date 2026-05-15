@@ -188,6 +188,29 @@ export async function completeSeasonAction(formData: FormData) {
   revalidatePath("/", "layout");
 }
 
+export async function resetSeasonAction(formData: FormData) {
+  const db = getDb();
+  const id = Number(formData.get("id"));
+  if (!id) throw new Error("Season id required");
+
+  const screenshots = db
+    .prepare(
+      "SELECT screenshot FROM races WHERE season_id = ? AND screenshot IS NOT NULL",
+    )
+    .all(id) as { screenshot: string }[];
+
+  db.prepare("DELETE FROM races WHERE season_id = ?").run(id);
+
+  for (const { screenshot } of screenshots) {
+    try {
+      await fs.unlink(path.join(UPLOAD_DIR, screenshot));
+    } catch {}
+  }
+
+  revalidatePath("/", "layout");
+  redirect(`/seasons/${id}`);
+}
+
 export async function deleteSeasonAction(formData: FormData) {
   const db = getDb();
   const id = Number(formData.get("id"));

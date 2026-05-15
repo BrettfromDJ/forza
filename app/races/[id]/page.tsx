@@ -7,6 +7,7 @@ import {
 } from "@/lib/queries";
 import { parsePoints, teamOutcomesForRace } from "@/lib/scoring";
 import { deleteRaceAction } from "@/lib/actions";
+import { ConfirmButton } from "@/components/ConfirmButton";
 import { requireAuth } from "@/lib/auth";
 
 export default async function RaceDetail({
@@ -141,9 +142,12 @@ export default async function RaceDetail({
 
       <form action={deleteRaceAction} className="flex justify-end">
         <input type="hidden" name="id" value={race.id} />
-        <button className="text-sm px-4 py-2 rounded-full border border-bad/40 text-bad hover:bg-bad/10">
+        <ConfirmButton
+          message={`Delete this race at ${race.track}? This cannot be undone.`}
+          className="text-sm px-4 py-2 rounded-full border border-bad/40 text-bad hover:bg-bad/10"
+        >
           Delete race
-        </button>
+        </ConfirmButton>
       </form>
     </div>
   );

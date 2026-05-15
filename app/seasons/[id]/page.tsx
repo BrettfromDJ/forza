@@ -18,7 +18,9 @@ import {
   activateSeasonAction,
   completeSeasonAction,
   deleteSeasonAction,
+  resetSeasonAction,
 } from "@/lib/actions";
+import { ConfirmButton } from "@/components/ConfirmButton";
 
 export default async function SeasonDetail({
   params,
@@ -92,11 +94,23 @@ export default async function SeasonDetail({
                 </button>
               </form>
             )}
+            <form action={resetSeasonAction}>
+              <input type="hidden" name="id" value={season.id} />
+              <ConfirmButton
+                message={`Reset ${season.name}? This deletes every race (and screenshots) in this season but keeps the season itself. This cannot be undone.`}
+                className="text-sm px-4 py-2 rounded-full border border-accent-2/50 text-accent-2 hover:bg-accent-2/10"
+              >
+                Reset stats
+              </ConfirmButton>
+            </form>
             <form action={deleteSeasonAction}>
               <input type="hidden" name="id" value={season.id} />
-              <button className="text-sm px-4 py-2 rounded-full border border-bad/40 text-bad hover:bg-bad/10">
+              <ConfirmButton
+                message={`Delete ${season.name}? This permanently removes the season and every race in it. This cannot be undone.`}
+                className="text-sm px-4 py-2 rounded-full border border-bad/40 text-bad hover:bg-bad/10"
+              >
                 Delete
-              </button>
+              </ConfirmButton>
             </form>
           </div>
         </div>
