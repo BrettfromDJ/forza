@@ -51,29 +51,15 @@ export default async function SetupPage() {
           <h2 className="font-bold tracking-wide text-sm text-ink-dim uppercase mb-4">
             Drivers
           </h2>
-          <div className="space-y-3">
+          <div className="grid sm:grid-cols-2 gap-4">
             {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className="grid grid-cols-[auto_1fr_1fr_auto] items-center gap-3"
-              >
+              <div key={i} className="flex items-center gap-3">
                 <span className="text-ink-mute font-mono w-6">P{i}</span>
                 <input
                   name={`p${i}_name`}
                   defaultValue={defaults[i - 1].name}
                   placeholder={`Driver ${i}`}
-                  className="bg-surface-2 border border-line rounded-lg px-3 py-2 outline-none focus:border-accent"
-                />
-                <input
-                  type="password"
-                  name={`p${i}_password`}
-                  placeholder={
-                    existingPlayers[i - 1]?.password_hash
-                      ? "Password set · leave blank to keep"
-                      : "New password (optional)"
-                  }
-                  autoComplete="new-password"
-                  className="bg-surface-2 border border-line rounded-lg px-3 py-2 outline-none focus:border-accent"
+                  className="flex-1 bg-surface-2 border border-line rounded-lg px-3 py-2 outline-none focus:border-accent"
                 />
                 <input
                   type="color"
@@ -84,10 +70,6 @@ export default async function SetupPage() {
               </div>
             ))}
           </div>
-          <p className="text-xs text-ink-mute mt-3">
-            Passwords are optional. Leave blank to keep the existing one (or
-            none).
-          </p>
         </section>
 
         <section className="bg-surface rounded-2xl border border-line/60 p-6">
