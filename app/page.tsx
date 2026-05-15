@@ -5,6 +5,7 @@ import {
   getActiveSeason,
   isSetupComplete,
   listRacesWithResults,
+  listSeasons,
   listTeams,
   listPlayers,
 } from "@/lib/queries";
@@ -15,6 +16,8 @@ import {
 } from "@/lib/scoring";
 import { StandingsScoreboard } from "@/components/Standings";
 import { RaceCard } from "@/components/RaceCard";
+import { ActivityFeed } from "@/components/ActivityFeed";
+import { buildActivityFeed } from "@/lib/feed";
 
 export default async function HomePage() {
   if (!isSetupComplete()) redirect("/setup");
@@ -42,6 +45,18 @@ export default async function HomePage() {
     points,
     players.map((p) => p.id),
   );
+
+  const allSeasons = listSeasons();
+  const racesBySeason: Record<number, typeof races> = {};
+  for (const s of allSeasons) {
+    racesBySeason[s.id] = s.id === season.id ? races : listRacesWithResults(s.id);
+  }
+  const feed = buildActivityFeed({
+    players,
+    teams,
+    seasons: allSeasons,
+    racesBySeason,
+  });
 
   return (
     <div className="space-y-10">
@@ -112,8 +127,14 @@ export default async function HomePage() {
           )}
         </div>
 
-        <div>
-          <SectionHeader title="Drivers" />
+        <div className="space-y-6">
+          <div>
+            <SectionHeader title="Activity" />
+            <ActivityFeed items={feed} limit={8} />
+          </div>
+
+          <div>
+            <SectionHeader title="Drivers" />
           <div className="space-y-2">
             {players.map((p) => {
               const s = playerStats.find((x) => x.playerId === p.id)!;
@@ -147,6 +168,7 @@ export default async function HomePage() {
                 </Link>
               );
             })}
+          </div>
           </div>
         </div>
       </section>
