@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { isSetupComplete, getActiveSeason } from "@/lib/queries";
 import { getCurrentUser } from "@/lib/auth";
-import { logoutAction } from "@/lib/actions";
+import { HeaderNav } from "@/components/HeaderNav";
 
 export const metadata: Metadata = {
   title: "Forza League",
@@ -33,38 +33,7 @@ export default async function RootLayout({
               </span>
             </Link>
             {setup && me ? (
-              <nav className="flex items-center gap-1 text-sm">
-                <NavLink href="/">Home</NavLink>
-                <NavLink href="/seasons">Seasons</NavLink>
-                <NavLink href="/teams">Teams</NavLink>
-                <Link
-                  href={`/players/${me.id}`}
-                  className="px-3 py-2 rounded-md hover:bg-surface-2 text-ink flex items-center gap-2"
-                  title="Your driver page"
-                >
-                  <span
-                    className="w-2 h-2 rounded-full"
-                    style={{ background: me.color }}
-                  />
-                  <span className="font-semibold">{me.name}</span>
-                </Link>
-                <form action={logoutAction}>
-                  <button
-                    className="px-3 py-2 rounded-md text-ink-mute hover:text-ink"
-                    title="Log out"
-                  >
-                    Log out
-                  </button>
-                </form>
-                {active && (
-                  <Link
-                    href="/races/new"
-                    className="ml-2 inline-flex items-center gap-2 bg-accent hover:brightness-110 transition px-4 py-2 rounded-full font-semibold text-sm text-white"
-                  >
-                    <span className="text-lg leading-none">+</span> Log race
-                  </Link>
-                )}
-              </nav>
+              <HeaderNav me={me} activeSeasonId={active?.id ?? null} />
             ) : null}
           </div>
         </header>
@@ -74,23 +43,6 @@ export default async function RootLayout({
         </footer>
       </body>
     </html>
-  );
-}
-
-function NavLink({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      className="px-3 py-2 rounded-md hover:bg-surface-2 text-ink-dim hover:text-ink transition"
-    >
-      {children}
-    </Link>
   );
 }
 
