@@ -21,7 +21,7 @@ export default async function SeasonsPage() {
         </div>
         <Link
           href="/seasons/new"
-          className="bg-accent hover:brightness-110 px-5 py-2.5 rounded-full font-semibold text-white text-sm"
+          className="hidden md:inline-flex bg-accent hover:brightness-110 px-5 py-2.5 rounded-full font-semibold text-white text-sm"
         >
           + New season
         </Link>
