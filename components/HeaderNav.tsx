@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import type { Player } from "@/lib/types";
 import { logoutAction } from "@/lib/actions";
@@ -12,6 +13,8 @@ type Props = {
 
 export function HeaderNav({ me, activeSeasonId }: Props) {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const close = () => setOpen(false);
 
   return (
@@ -47,17 +50,7 @@ export function HeaderNav({ me, activeSeasonId }: Props) {
       </nav>
 
       {/* Mobile */}
-      <div className="flex md:hidden items-center gap-2">
-        {activeSeasonId && (
-          <Link
-            href="/races/new"
-            aria-label="Log race"
-            className="inline-flex items-center gap-1.5 bg-accent hover:brightness-110 transition px-3 py-2 rounded-full font-bold text-sm text-white"
-          >
-            <span className="text-base leading-none">+</span>
-            <span>Log</span>
-          </Link>
-        )}
+      <div className="flex md:hidden items-center">
         <button
           onClick={() => setOpen(true)}
           aria-label="Open menu"
@@ -69,9 +62,9 @@ export function HeaderNav({ me, activeSeasonId }: Props) {
         </button>
       </div>
 
-      {open && (
+      {open && mounted && createPortal(
         <div
-          className="fixed inset-0 z-50 md:hidden"
+          className="fixed inset-0 z-[100] md:hidden"
           onClick={close}
           role="dialog"
           aria-modal="true"
@@ -134,7 +127,8 @@ export function HeaderNav({ me, activeSeasonId }: Props) {
               </form>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   );

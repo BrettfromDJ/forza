@@ -4,6 +4,7 @@ import Link from "next/link";
 import { isSetupComplete, getActiveSeason } from "@/lib/queries";
 import { getCurrentUser } from "@/lib/auth";
 import { HeaderNav } from "@/components/HeaderNav";
+import { LogRaceFab } from "@/components/LogRaceFab";
 
 export const metadata: Metadata = {
   title: "Forza League",
@@ -38,6 +39,7 @@ export default async function RootLayout({
           </div>
         </header>
         <main className="max-w-6xl mx-auto px-5 py-8">{children}</main>
+        {setup && me && active ? <LogRaceFab /> : null}
         <footer className="max-w-6xl mx-auto px-5 py-10 text-xs text-ink-mute">
           Built for the crew. Data lives in SQLite.
         </footer>
