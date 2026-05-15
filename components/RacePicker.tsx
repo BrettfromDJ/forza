@@ -8,13 +8,16 @@ type Slot = number | null;
 export function RacePicker({
   players,
   teams,
+  initialGrid,
+  initialDnf,
 }: {
   players: Player[];
   teams: TeamWithPlayers[];
+  initialGrid?: Slot[];
+  initialDnf?: number[];
 }) {
-  // grid[i] = player_id placed at position i+1
-  const [grid, setGrid] = useState<Slot[]>([null, null, null, null]);
-  const [dnf, setDnf] = useState<Set<number>>(new Set());
+  const [grid, setGrid] = useState<Slot[]>(initialGrid ?? [null, null, null, null]);
+  const [dnf, setDnf] = useState<Set<number>>(new Set(initialDnf ?? []));
 
   const placed = useMemo(() => new Set(grid.filter((g): g is number => !!g)), [grid]);
   const unplaced = players.filter(

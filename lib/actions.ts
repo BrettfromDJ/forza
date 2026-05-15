@@ -36,6 +36,7 @@ export async function setupAction(formData: FormData) {
   const players = [1, 2, 3, 4].map((i) => ({
     name: String(formData.get(`p${i}_name`) || "").trim(),
     color: String(formData.get(`p${i}_color`) || "#e10600"),
+    gamertag: String(formData.get(`p${i}_gamertag`) || "").trim() || null,
   }));
   const teams = [1, 2].map((i) => ({
     name: String(formData.get(`t${i}_name`) || `Team ${i}`).trim(),
@@ -55,10 +56,10 @@ export async function setupAction(formData: FormData) {
 
   const tx = db.transaction(() => {
     const upsertPlayer = db.prepare(
-      `INSERT INTO players (id, name, color) VALUES (?, ?, ?)
-       ON CONFLICT(id) DO UPDATE SET name = excluded.name, color = excluded.color`,
+      `INSERT INTO players (id, name, color, gamertag) VALUES (?, ?, ?, ?)
+       ON CONFLICT(id) DO UPDATE SET name = excluded.name, color = excluded.color, gamertag = excluded.gamertag`,
     );
-    players.forEach((p, idx) => upsertPlayer.run(idx + 1, p.name, p.color));
+    players.forEach((p, idx) => upsertPlayer.run(idx + 1, p.name, p.color, p.gamertag));
 
     const existingTeams = db
       .prepare("SELECT id FROM teams ORDER BY id ASC")

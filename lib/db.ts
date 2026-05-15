@@ -90,6 +90,9 @@ function migrate(db: Database.Database) {
   if (!playerCols.some((c) => c.name === "password_hash")) {
     db.exec("ALTER TABLE players ADD COLUMN password_hash TEXT");
   }
+  if (!playerCols.some((c) => c.name === "gamertag")) {
+    db.exec("ALTER TABLE players ADD COLUMN gamertag TEXT");
+  }
 }
 
 export function getDb(): Database.Database {

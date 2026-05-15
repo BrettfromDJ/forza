@@ -14,10 +14,10 @@ export default async function SetupPage() {
   const existingTeams = listTeams();
 
   const defaults = [
-    { name: existingPlayers[0]?.name || "", color: existingPlayers[0]?.color || "#e10600" },
-    { name: existingPlayers[1]?.name || "", color: existingPlayers[1]?.color || "#1e90ff" },
-    { name: existingPlayers[2]?.name || "", color: existingPlayers[2]?.color || "#2ecc71" },
-    { name: existingPlayers[3]?.name || "", color: existingPlayers[3]?.color || "#ffd400" },
+    { name: existingPlayers[0]?.name || "", color: existingPlayers[0]?.color || "#e10600", gamertag: existingPlayers[0]?.gamertag || "" },
+    { name: existingPlayers[1]?.name || "", color: existingPlayers[1]?.color || "#1e90ff", gamertag: existingPlayers[1]?.gamertag || "" },
+    { name: existingPlayers[2]?.name || "", color: existingPlayers[2]?.color || "#2ecc71", gamertag: existingPlayers[2]?.gamertag || "" },
+    { name: existingPlayers[3]?.name || "", color: existingPlayers[3]?.color || "#ffd400", gamertag: existingPlayers[3]?.gamertag || "" },
   ];
   const teamDefaults = [
     {
@@ -55,12 +55,20 @@ export default async function SetupPage() {
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="flex items-center gap-3">
                 <span className="text-ink-mute font-mono w-6">P{i}</span>
-                <input
-                  name={`p${i}_name`}
-                  defaultValue={defaults[i - 1].name}
-                  placeholder={`Driver ${i}`}
-                  className="flex-1 bg-surface-2 border border-line rounded-lg px-3 py-2 outline-none focus:border-accent"
-                />
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <input
+                    name={`p${i}_name`}
+                    defaultValue={defaults[i - 1].name}
+                    placeholder={`Driver ${i} name`}
+                    className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 outline-none focus:border-accent"
+                  />
+                  <input
+                    name={`p${i}_gamertag`}
+                    defaultValue={defaults[i - 1].gamertag}
+                    placeholder="Xbox gamertag (for screenshot scan)"
+                    className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 outline-none focus:border-accent text-sm text-ink-dim"
+                  />
+                </div>
                 <input
                   type="color"
                   name={`p${i}_color`}
