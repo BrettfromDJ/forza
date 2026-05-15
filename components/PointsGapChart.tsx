@@ -39,23 +39,9 @@ export function PointsGapChart({ stats }: { stats: TeamSeasonStats[] }) {
   const gridLines = 4;
 
   return (
-    <div className="bg-surface border border-line/60 rounded-2xl p-4">
-      <div className="text-xs uppercase tracking-[0.2em] text-ink-mute font-bold mb-3">
+    <div>
+      <div className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-ink-mute font-bold mb-2">
         Points race
-      </div>
-
-      {/* Legend */}
-      <div className="flex gap-4 mb-3">
-        {[t1, t2].map((t) => (
-          <div key={t.team.id} className="flex items-center gap-1.5 text-xs">
-            <span
-              className="inline-block w-6 h-0.5 rounded"
-              style={{ background: t.team.color }}
-            />
-            <span className="text-ink-dim">{t.team.name}</span>
-            <span className="font-black tabular-nums">{t.totalPoints}pts</span>
-          </div>
-        ))}
       </div>
 
       <svg

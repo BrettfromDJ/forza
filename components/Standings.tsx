@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { TeamSeasonStats } from "@/lib/scoring";
+import { PointsGapChart } from "@/components/PointsGapChart";
 
 export function StandingsScoreboard({
   stats,
@@ -59,8 +60,18 @@ export function StandingsScoreboard({
 
         <TeamSide stats={t2} align="left" />
       </div>
+
+      {hasRaces(sorted) && (
+        <div className="relative mt-6 sm:mt-8 pt-5 sm:pt-6 border-t border-line/40">
+          <PointsGapChart stats={sorted} />
+        </div>
+      )}
     </div>
   );
+}
+
+function hasRaces(stats: TeamSeasonStats[]): boolean {
+  return stats.some((s) => s.pointsHistory.length > 0);
 }
 
 function TeamSide({

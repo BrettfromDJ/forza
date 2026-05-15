@@ -14,7 +14,6 @@ import {
 } from "@/lib/scoring";
 import { StandingsScoreboard } from "@/components/Standings";
 import { RaceCard } from "@/components/RaceCard";
-import { PointsGapChart } from "@/components/PointsGapChart";
 import { ActivityFeed } from "@/components/ActivityFeed";
 import { AutoRefresh } from "@/components/AutoRefresh";
 import { SeasonActionsMenu } from "@/components/SeasonActionsMenu";
@@ -84,8 +83,6 @@ export default async function SeasonDetail({
       </div>
 
       <StandingsScoreboard stats={teamStats} />
-
-      {races.length > 0 && <PointsGapChart stats={teamStats} />}
 
       <section className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
