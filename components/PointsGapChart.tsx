@@ -1,8 +1,8 @@
 import type { TeamSeasonStats } from "@/lib/scoring";
 
 const W = 560;
-const H = 180;
-const PAD = { l: 36, r: 16, t: 16, b: 32 };
+const H = 170;
+const PAD = { l: 36, r: 16, t: 14, b: 22 };
 const CW = W - PAD.l - PAD.r;
 const CH = H - PAD.t - PAD.b;
 
@@ -46,8 +46,7 @@ export function PointsGapChart({ stats }: { stats: TeamSeasonStats[] }) {
 
       <svg
         viewBox={`0 0 ${W} ${H}`}
-        className="w-full"
-        style={{ height: 160 }}
+        className="w-full block"
         aria-hidden
       >
         {/* Horizontal grid lines */}
@@ -86,9 +85,9 @@ export function PointsGapChart({ stats }: { stats: TeamSeasonStats[] }) {
             <text
               key={i}
               x={px(i, p1.length)}
-              y={H - 6}
+              y={H - 4}
               textAnchor="middle"
-              fontSize={10}
+              fontSize={9}
               fill="currentColor"
               fillOpacity={0.35}
             >

@@ -36,7 +36,7 @@ export function StandingsScoreboard({
   const lead = t1.totalPoints - t2.totalPoints;
 
   return (
-    <div className="rounded-3xl bg-gradient-to-br from-surface to-surface-2 border border-line/60 px-4 py-8 sm:p-10 relative overflow-hidden">
+    <div className="rounded-3xl bg-gradient-to-br from-surface to-surface-2 border border-line/60 px-4 pt-8 pb-5 sm:p-10 relative overflow-hidden">
       {/* Subtle team color glows on each side */}
       <div
         className="absolute inset-y-0 left-0 w-1/2 opacity-[0.07] pointer-events-none"
@@ -62,7 +62,7 @@ export function StandingsScoreboard({
       </div>
 
       {hasRaces(sorted) && (
-        <div className="relative mt-6 sm:mt-8 pt-5 sm:pt-6 border-t border-line/40">
+        <div className="relative mt-5 sm:mt-8 pt-4 sm:pt-6 border-t border-line/40">
           <PointsGapChart stats={sorted} />
         </div>
       )}
